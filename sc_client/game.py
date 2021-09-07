@@ -17,10 +17,11 @@ class PieceType(Enum):
 
 
 class Game:
-    def __init__(self, room_id, calculate_move, setup, connection):
+    def __init__(self, room_id, setup, calculate_move, on_result, connection):
         self.room_id = room_id
-        self.calculate_move = calculate_move
         self.setup = setup
+        self.calculate_move = calculate_move
+        self.on_result = on_result
         self.connection = connection
         self.team = None
         self.pieces = None
@@ -50,6 +51,9 @@ class Game:
         elif element.get('class') == 'moveRequest':
             move = self.calculate_move(self)
             self.connection.send(move.to_xml())
+        elif element.get('class') == 'result':
+            self.on_result(self, Result.from_xml(element))
+            return True
         else:
             logging.warning(
                 'Unexpected data xml tag with class \'%s\'.', element.get('class'))
@@ -134,3 +138,35 @@ class Piece:
             piece = self.game.get_piece(x, y)
             if 0 <= x < 8 and 0 <= y < 8 and (piece is None or piece.team != self.team):
                 yield Move(self, self.x, self.y, x, y)
+
+
+class Result:
+    @classmethod
+    def from_xml(cls, element: ET.Element):
+        definitions = element.findall('definition/fragment')
+        score_index = definitions.index(next(
+            definition for definition in definitions if definition.get('name') == 'Siegpunkte')) + 1
+
+        scores = {}
+        regular = True
+        for entry in element.findall('scores/entry'):
+            team = Team[entry.find('player').get('team')]
+            score = entry.find('score/part[%s]' % score_index)
+            scores[team] = score
+
+            regular = regular and entry.find('score').get('cause') == 'REGULAR'
+
+        winner = element.find('winner')
+        if winner is not None:
+            winner = Team[winner.get('team')]
+
+        return cls(
+            scores=scores,
+            winner=winner,
+            regular=regular
+        )
+
+    def __init__(self, scores, winner, regular):
+        self.scores = scores
+        self.winner = winner
+        self.regular = regular

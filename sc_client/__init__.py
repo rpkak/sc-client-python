@@ -1,2 +1,2 @@
-from .game import Game, Move, Piece, PieceType, Team
+from .game import Game, Move, Piece, PieceType, Result, Team
 from .mainloop import start_mainloop
