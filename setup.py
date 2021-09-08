@@ -9,7 +9,7 @@ def get_requirements():
 
 setup(
     name='sc-client',
-    version='0.0.1-alpha.1',
+    version='1.0.0',
     packages=find_packages(),
     install_requires=get_requirements(),
     entry_points={
