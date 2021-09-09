@@ -42,7 +42,8 @@ class Game:
                 self.last_move = Move.from_xml(last_move, self)
 
             for entry in element.findall('state/ambers/entry'):
-                self.ambers[Team[entry.find('team').text]] = int(entry.find('int').text)
+                self.ambers[Team[entry.find('team').text]] = int(
+                    entry.find('int').text)
         elif element.get('class') == 'welcomeMessage':
             self.team = Team[element.get('color')]
             self.setup(self)
@@ -151,9 +152,8 @@ class Result:
         scores = {}
         regular = True
         for entry in element.findall('scores/entry'):
-            team = Team[entry.find('player').get('team')]
-            score = entry.find('score/part[%s]' % score_index)
-            scores[team] = score
+            scores[Team[entry.find('player').get('team')]] = int(
+                entry.find('score/part[%s]' % score_index).text)
 
             regular = regular and entry.find('score').get('cause') == 'REGULAR'
 
