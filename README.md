@@ -20,13 +20,25 @@ A python client for the Software-Challenge Germany.
 
 - Install sc-client-python
 
-  Execute:
+  - Option 1: GitHub releases (stable, recommended)
 
-  ```
-  pip install git+https://github.com/rpkak/sc-client-python@tag
-  ```
+    Go to the [GitHub release page](https://github.com/rpkak/sc-client-python/releases), right click to the `.whl` file of the release you want to install and click `Copy link`.
 
-  where `tag` is the version of sc-client-python, `master` to get the latest unstable version or `latest` to get the latest stable version.
+    After that execute:
+
+    ```
+    pip install [paste the link here]
+    ```
+
+    If you want you can also download the `.whl` file and paste the local path into the command.
+
+  - Option 2: GitHub source code (unstable)
+
+    Execute:
+
+    ```
+    pip install git+https://github.com/rpkak/sc-client-python.git
+    ```
 
 - Create an empty project
 
