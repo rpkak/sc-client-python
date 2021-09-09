@@ -1,6 +1,8 @@
 from importlib.util import module_from_spec, spec_from_file_location
 
 import click
+import sys
+import os
 
 from .mainloop import start_mainloop
 from .project_init import init_project
@@ -34,6 +36,8 @@ def init(directory, logic, setup, calculate_move, on_result, no_git):
 def run(host, port, reservation, room, file, setup, calculate_move, on_result):
     if reservation is not None and room is not None:
         raise click.UsageError('Either use \'--reservation\' or \'--room\'.')
+
+    sys.path.insert(0, os.getcwd())
 
     logic_spec = spec_from_file_location('logic', file)
     logic = module_from_spec(logic_spec)
