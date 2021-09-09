@@ -63,6 +63,9 @@ class Game:
             if piece.x == x and piece.y == y:
                 return piece
 
+    def get_board(self):
+        return [[self.get_piece(x, y) for y in range(8)] for x in range(8)]
+
     def get_possible_moves(self):
         for piece in self.pieces:
             if piece.team == self.team:
