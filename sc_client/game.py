@@ -33,7 +33,7 @@ class Game:
     def update(self, element):
         if element.get('class') == 'memento':
             self.turn = int(element.find('state').get('turn'))
-            self.start_team = element.find('state/startTeam').text
+            self.start_team = Team[element.find('state/startTeam').text]
             self.pieces = [Piece.from_xml(entry, self) for entry in element.findall(
                 'state/board/pieces/entry')]
 
