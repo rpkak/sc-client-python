@@ -29,5 +29,11 @@ setup(
     project_urls={
         'Source': 'https://github.com/rpkak/sc-client-python',
         'Tracker': 'https://github.com/rpkak/sc-client-python/issues'
-    }
+    },
+    license='MIT',
+    classifiers=[
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python :: 3'
+    ]
 )
