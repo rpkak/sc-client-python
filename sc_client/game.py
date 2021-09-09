@@ -41,10 +41,8 @@ class Game:
             if last_move:
                 self.last_move = Move.from_xml(last_move, self)
 
-            ambers = element.findall('state/ambers/entry')
-            if ambers:
-                self.ambers = dict((Team[entry.find('team').text], int(
-                    entry.find('int').text)) for entry in ambers)
+            for entry in element.findall('state/ambers/entry'):
+                self.ambers[Team[entry.find('team').text]] = int(entry.find('int').text)
         elif element.get('class') == 'welcomeMessage':
             self.team = Team[element.get('color')]
             self.setup(self)
