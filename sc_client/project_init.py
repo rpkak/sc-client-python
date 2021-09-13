@@ -24,7 +24,7 @@ def ON_RESULT(game: Game, result: Result) -> None:
 '''
 
 
-def init_project(directory, logic, setup, calculate_move, on_result, no_git):
+def init_project(directory, logic, setup, calculate_move, on_result):
     logic_file_content = logic_template \
         .replace('SETUP', setup) \
         .replace('CALCULATE_MOVE', calculate_move) \
@@ -38,13 +38,3 @@ def init_project(directory, logic, setup, calculate_move, on_result, no_git):
 
     with open(logic, 'w') as f:
         f.write(logic_file_content)
-
-    if not no_git:
-        cwd = os.getcwd()
-        os.chdir(directory)
-
-        if os.system('git status') != 0:
-            os.system('git init')
-            os.system('git add %s' % logic)
-            os.system('git commit -m "init commit" -m "create scpy project"')
-        os.chdir(cwd)

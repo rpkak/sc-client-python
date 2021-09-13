@@ -19,9 +19,8 @@ def scpy():
 @click.option('--setup', '-s', default='setup', show_default=True, help='Name of the function which is called after you join a team.')
 @click.option('--calculate-move', '-c', default='calculate_move', show_default=True, help='Name of the function which should return a move.')
 @click.option('--on-result', '-r', default='on_result', show_default=True, help='Name of the function which is called when the result is ready.')
-@click.option('--no-git', is_flag=True, help='Do not try to initialize git.')
-def init(directory, logic, setup, calculate_move, on_result, no_git):
-    init_project(directory, logic, setup, calculate_move, on_result, no_git)
+def init(directory, logic, setup, calculate_move, on_result):
+    init_project(directory, logic, setup, calculate_move, on_result)
 
 
 @scpy.command(help='Starts the client.')
