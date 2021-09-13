@@ -1,5 +1,4 @@
 import os
-from contextlib import redirect_stderr, redirect_stdout
 
 logic_template = '''import logging
 

@@ -4,7 +4,7 @@ import click
 import sys
 import os
 
-from .mainloop import start_mainloop
+from .gameloop import start_gameloop
 from .project_init import init_project
 
 
@@ -42,7 +42,7 @@ def run(host, port, reservation, room, file, setup, calculate_move, on_result):
     logic = module_from_spec(logic_spec)
     logic_spec.loader.exec_module(logic)
 
-    start_mainloop(
+    start_gameloop(
         setup=getattr(logic, setup),
         calculate_move=getattr(logic, calculate_move),
         on_result=getattr(logic, on_result),
