@@ -1,8 +1,9 @@
+import os
+import sys
 from importlib.util import module_from_spec, spec_from_file_location
+from time import sleep
 
 import click
-import sys
-import os
 
 from .gameloop import start_gameloop
 from .project_init import init_project
@@ -32,7 +33,8 @@ def init(directory, logic, setup, calculate_move, on_result):
 @click.option('--setup', '-s', default='setup', show_default=True, help='A function in \'--file\' which is called after you join a team.')
 @click.option('--calculate-move', '-c', default='calculate_move', show_default=True, help='A function in \'--file\' which should return a move.')
 @click.option('--on-result', '-e', default='on_result', show_default=True, help='A function in \'--file\' which is called when the result is ready.')
-def run(host, port, reservation, room, file, setup, calculate_move, on_result):
+@click.option('--loop', '-l', type=click.IntRange(1, max_open=True), default=1, show_default=True, help='Number of times to be played.')
+def run(host, port, reservation, room, file, setup, calculate_move, on_result, loop):
     if reservation is not None and room is not None:
         raise click.UsageError('Either use \'--reservation\' or \'--room\'.')
 
@@ -42,12 +44,15 @@ def run(host, port, reservation, room, file, setup, calculate_move, on_result):
     logic = module_from_spec(logic_spec)
     logic_spec.loader.exec_module(logic)
 
-    start_gameloop(
-        setup=getattr(logic, setup),
-        calculate_move=getattr(logic, calculate_move),
-        on_result=getattr(logic, on_result),
-        host=host,
-        port=port,
-        reservation=reservation,
-        room=room
-    )
+    for _ in range(loop):
+        start_gameloop(
+            setup=getattr(logic, setup),
+            calculate_move=getattr(logic, calculate_move),
+            on_result=getattr(logic, on_result),
+            host=host,
+            port=port,
+            reservation=reservation,
+            room=room
+        )
+        if loop != 1:
+            sleep(1)
