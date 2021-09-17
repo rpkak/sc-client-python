@@ -1,6 +1,12 @@
+from __future__ import annotations
+
 import logging
 import xml.etree.ElementTree as ET
+from collections.abc import Callable, Iterator
 from enum import Enum
+from typing import Optional
+
+from .connection import Connection
 
 
 class Team(Enum):
@@ -17,20 +23,20 @@ class PieceType(Enum):
 
 
 class Game:
-    def __init__(self, room_id, setup, calculate_move, on_result, connection):
+    def __init__(self, room_id: str, setup: Callable[[Game], None], calculate_move: Callable[[Game], None], on_result: Callable[[Game, Result], None], connection: Connection):
         self.room_id = room_id
         self.setup = setup
         self.calculate_move = calculate_move
         self.on_result = on_result
         self.connection = connection
-        self.team = None
-        self.pieces = None
-        self.start_team = None
-        self.turn = 0
-        self.last_move = None
+        self.team: Team = None
+        self.pieces: list[Piece] = None
+        self.start_team: Team = None
+        self.turn: int = 0
+        self.last_move: Move = None
         self.ambers = {Team.ONE: 0, Team.TWO: 0}
 
-    def update(self, element):
+    def update(self, element: ET.Element) -> None:
         if element.get('class') == 'memento':
             self.turn = int(element.find('state').get('turn'))
             self.start_team = Team[element.find('state/startTeam').text]
@@ -57,15 +63,15 @@ class Game:
             logging.warning(
                 'Unexpected data xml tag with class \'%s\'.', element.get('class'))
 
-    def get_piece(self, x, y):
+    def get_piece(self, x: int, y: int) -> Optional[Piece]:
         for piece in self.pieces:
             if piece.x == x and piece.y == y:
                 return piece
 
-    def get_board(self):
+    def get_board(self) -> list[list[Optional[Piece]]]:
         return [[self.get_piece(x, y) for y in range(8)] for x in range(8)]
 
-    def get_possible_moves(self):
+    def get_possible_moves(self) -> Iterator[Move]:
         for piece in self.pieces:
             if piece.team == self.team:
                 yield from piece.get_possible_moves()
@@ -73,7 +79,7 @@ class Game:
 
 class Move:
     @classmethod
-    def from_xml(cls, element, game):
+    def from_xml(cls, element: ET.Element, game: Game) -> Move:
         from_ = element.find('from')
         to = element.find('to')
         from_x = int(from_.get('x'))
@@ -89,14 +95,14 @@ class Move:
             to_y=to_y
         )
 
-    def __init__(self, piece, from_x, from_y, to_x, to_y):
+    def __init__(self, piece: Piece, from_x: int, from_y: int, to_x: int, to_y: int):
         self.piece = piece
         self.to_x = to_x
         self.to_y = to_y
         self.from_x = from_x
         self.from_y = from_y
 
-    def to_xml(self):
+    def to_xml(self) -> ET.Element:
         room = ET.Element('room', attrib={'roomId': self.piece.game.room_id})
         move = ET.SubElement(room, 'data', attrib={'class': 'move'})
         ET.SubElement(move, 'from', attrib={
@@ -108,7 +114,7 @@ class Move:
 
 class Piece:
     @classmethod
-    def from_xml(cls, element, game):
+    def from_xml(cls, element: ET.Element, game: Game) -> Piece:
         coordinates = element.find('coordinates')
         piece = element.find('piece')
         return cls(
@@ -120,7 +126,7 @@ class Piece:
             game=game
         )
 
-    def __init__(self, x, y, team, type, count, game):
+    def __init__(self, x: int, y: int, team: Team, type: PieceType, count: int, game: Game):
         self.x = x
         self.y = y
         self.team = team
@@ -128,7 +134,7 @@ class Piece:
         self.count = count
         self.game = game
 
-    def get_possible_moves(self):
+    def get_possible_moves(self) -> Iterator[Move]:
         if self.team == Team.ONE:
             possible_move_positions = [(self.x + x, self.y + y)
                                        for x, y in self.type.value]
@@ -144,7 +150,7 @@ class Piece:
 
 class Result:
     @classmethod
-    def from_xml(cls, element: ET.Element):
+    def from_xml(cls, element: ET.Element) -> Result:
         definitions = element.findall('definition/fragment')
         score_index = definitions.index(next(
             definition for definition in definitions if definition.get('name') == 'Siegpunkte')) + 1
@@ -167,7 +173,7 @@ class Result:
             regular=regular
         )
 
-    def __init__(self, scores, winner, regular):
+    def __init__(self, scores: dict[Team, int], winner: Optional[Team], regular: bool):
         self.scores = scores
         self.winner = winner
         self.regular = regular
