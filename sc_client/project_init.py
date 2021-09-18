@@ -23,7 +23,7 @@ def ON_RESULT(game: Game, result: Result) -> None:
 '''
 
 
-def init_project(directory, logic, setup, calculate_move, on_result):
+def init_project(directory, logic: str, setup: str, calculate_move: str, on_result: str):
     logic_file_content = logic_template \
         .replace('SETUP', setup) \
         .replace('CALCULATE_MOVE', calculate_move) \
