@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 import socket
 import xml.etree.ElementTree as ET
 from io import BytesIO
@@ -12,7 +14,7 @@ class Connection:
         self.socket: socket.socket = None
         self.elements: list[ET.Element] = []
 
-    def __enter__(self) -> None:
+    def __enter__(self) -> Connection:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
         self.elements = []
