@@ -1,10 +1,11 @@
 import logging
+from collections.abc import Callable
 
 from .connection import Connection
-from .game import Game
+from .game import Game, Result
 
 
-def start_gameloop(setup, calculate_move, on_result, host='localhost', port=13050, reservation=None, room=None):
+def start_gameloop(setup: Callable[[Game], None], calculate_move: Callable[[Game], None], on_result: Callable[[Game, Result], None], host: str='localhost', port=13050, reservation=None, room=None):
     with Connection(host, port, 4096) as conn:
         if reservation is not None:
             conn.send('<joinPrepared reservationCode="%s" />' % reservation)

@@ -1,6 +1,7 @@
 import socket
 import xml.etree.ElementTree as ET
 from io import BytesIO
+from typing import Union
 
 
 class Connection:
@@ -8,16 +9,16 @@ class Connection:
         self.host = host
         self.port = port
         self.bufsize = bufsize
-        self.socket = None
-        self.elements = []
+        self.socket: socket.socket = None
+        self.elements: list[ET.Element] = []
 
-    def __enter__(self):
+    def __enter__(self) -> None:
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
         self.elements = []
         return self
 
-    def send(self, content):
+    def send(self, content: Union[bytes, ET.Element]) -> None:
         if isinstance(content, ET.Element):
             bio = BytesIO()
             ET.ElementTree(content).write(bio, 'utf-8')
@@ -45,6 +46,6 @@ class Connection:
 
         return self.elements.pop(0)
 
-    def __exit__(self, type, value, traceback):
+    def __exit__(self, type, value, traceback) -> None:
         self.socket.close()
         self.socket = None
