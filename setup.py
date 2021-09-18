@@ -15,7 +15,7 @@ def get_readme():
 
 setup(
     name='sc-client',
-    version='1.2.1',
+    version='1.3.0-alpha',
     packages=find_packages(),
     install_requires=get_requirements(),
     entry_points={
