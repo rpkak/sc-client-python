@@ -10,7 +10,7 @@ def get_readme():
 
 setup(
     name='sc-client',
-    version='1.3.0',
+    version='1.3.1',
     packages=find_packages(),
     entry_points={
         'console_scripts': [
