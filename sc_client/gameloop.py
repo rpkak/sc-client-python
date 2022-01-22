@@ -19,9 +19,9 @@ def start_gameloop(setup: Callable[[Game], None], calculate_move: Callable[[Game
 
 def prepare_gameloop(conn: Connection, reservation: Optional[str] = None, room: Optional[str] = None) -> None:
     if reservation is not None:
-        conn.send('<joinPrepared reservationCode="%s" />' % reservation)
+        conn.send(b'<protocol><joinPrepared reservationCode="%s" />' % reservation.encode('utf-8'))
     elif room is not None:
-        conn.send('<joinRoom roomId="%s" />' % room)
+        conn.send(b'<protocol><joinRoom roomId="%s" />' % room.encode('utf-8'))
     else:
         conn.send(b'<protocol><join />')
 
