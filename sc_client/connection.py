@@ -7,20 +7,20 @@ from typing import Union
 
 
 class Connection:
-    def __init__(self, host: str, port: int, bufsize: int):
+    def __init__(self, host, port, bufsize):
         self.host = host
         self.port = port
         self.bufsize = bufsize
         self.socket: socket.socket = None
         self.elements: list[ET.Element] = []
 
-    def __enter__(self) -> Connection:
+    def __enter__(self):
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.socket.connect((self.host, self.port))
         self.elements = []
         return self
 
-    def send(self, content: Union[bytes, ET.Element]) -> None:
+    def send(self, content):
         if isinstance(content, ET.Element):
             bio = BytesIO()
             ET.ElementTree(content).write(bio, 'utf-8')
@@ -28,7 +28,7 @@ class Connection:
 
         self.socket.send(content)
 
-    def receive(self) -> ET.Element:
+    def receive(self):
         while not self.elements:
             response = b''
 

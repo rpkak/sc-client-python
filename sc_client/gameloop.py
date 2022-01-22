@@ -6,7 +6,7 @@ from .connection import Connection
 from .game import Game, Result
 
 
-def start_gameloop(setup: Callable[[Game], None], calculate_move: Callable[[Game], None], on_result: Callable[[Game, Result], None], host: str = 'localhost', port: int = 13050, reservation: Optional[str] = None, room: Optional[str] = None) -> None:
+def start_gameloop(setup, calculate_move, on_result, host='localhost', port=13050, reservation=None, room=None):
     with Connection(host, port, 4096) as conn:
         prepare_gameloop(conn, reservation, room)
 
@@ -17,16 +17,17 @@ def start_gameloop(setup: Callable[[Game], None], calculate_move: Callable[[Game
                 conn, game, setup, calculate_move, on_result)
 
 
-def prepare_gameloop(conn: Connection, reservation: Optional[str] = None, room: Optional[str] = None) -> None:
+def prepare_gameloop(conn, reservation=None, room=None):
     if reservation is not None:
-        conn.send(b'<protocol><joinPrepared reservationCode="%s" />' % reservation.encode('utf-8'))
+        conn.send(b'<protocol><joinPrepared reservationCode="%s" />' %
+                  reservation.encode('utf-8'))
     elif room is not None:
         conn.send(b'<protocol><joinRoom roomId="%s" />' % room.encode('utf-8'))
     else:
         conn.send(b'<protocol><join />')
 
 
-def gameloop_step(conn: Connection, game: Game, setup: Callable[[Game], None], calculate_move: Callable[[Game], None], on_result: Callable[[Game, Result], None]) -> tuple[Game, bool]:
+def gameloop_step(conn, game, setup, calculate_move, on_result):
     element = conn.receive()
     if element is None:
         return game, False

@@ -3,11 +3,6 @@ import os
 from setuptools import find_packages, setup
 
 
-def get_requirements():
-    with open(os.path.join(os.path.dirname(__file__), 'requirements.txt')) as f:
-        return f.readlines()
-
-
 def get_readme():
     with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'README.md')) as f:
         return f.read()
@@ -17,7 +12,6 @@ setup(
     name='sc-client',
     version='1.3.0',
     packages=find_packages(),
-    install_requires=get_requirements(),
     entry_points={
         'console_scripts': [
             'scpy = sc_client.cli:scpy'
